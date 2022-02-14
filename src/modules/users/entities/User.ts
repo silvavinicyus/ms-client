@@ -1,12 +1,10 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { v4 as uuidV4 } from 'uuid';
 
 @Entity('users')
 export default class User {
   @PrimaryColumn()
-  id: number;
-
-  @Column()
-  secure_id: string;
+  id: string;
 
   @Column()
   full_name: string;
@@ -34,4 +32,10 @@ export default class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  constructor() {
+    if (!this.id) {
+      this.id = uuidV4();
+    }
+  }
 }

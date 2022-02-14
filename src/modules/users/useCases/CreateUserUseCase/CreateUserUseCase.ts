@@ -26,7 +26,7 @@ export default class CreateUserUseCase {
       current_balance, 
       average_salary, 
       status
-    });
+    });0
 
     return user;
   }

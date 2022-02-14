@@ -8,18 +8,15 @@ import { AppError } from '../../errors/AppError';
 import createConnection from '../../../shared/infra/typeorm';
 
 import router from './routes';
-import { Kafka } from 'kafkajs';
+import kafka from '../../../modules/utils/kafka';
+import CreateUserController from '../../../modules/users/useCases/CreateUserUseCase/CreateUserController';
+import User from '../../../modules/users/entities/User';
 
 createConnection().then(() => {
   console.log("Database connected!");
 });
 
 const app = express();
-
-const kafka = new Kafka({
-  clientId: 'ms-emails',
-  brokers: ['kafka:29092']
-});
 
 app.use(router);
 
@@ -36,9 +33,36 @@ app.use(
   }
 );
 
-const topicNormalUser = 'user_newbet';
+const topicNormalUser = 'user_lubycash';
 const consumerNormalUser = kafka.consumer({ groupId: 'create-user' });
+const creteUserController = new CreateUserController();
 
+async function createUser() {
+  await consumerNormalUser.connect();
+  await consumerNormalUser.subscribe({ topic: topicNormalUser, fromBeginning: true}).then(() => {
+    console.log("Subscribed");
+  });
+
+  let user: User;
+
+  await consumerNormalUser.run({
+    eachMessage: async ({topic, partition, message}) => {
+      const data = message.value!.toString();
+      const dataJson = JSON.parse(data);     
+
+      console.log(dataJson);
+
+      user = await creteUserController.handle(dataJson);
+
+      console.log(user)
+      
+    }
+  });
+
+  return user;
+}
+
+createUser();
 
 
 
