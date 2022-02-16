@@ -4,6 +4,11 @@ import { ICreateUserDTO } from "../../dtos/CreateUserDTO";
 import User from "../../entities/User";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
 
+interface IResponse {
+  user: User,
+  error?: string;    
+}
+
 @injectable()
 export default class CreateUserUseCase {
   constructor(
@@ -11,15 +16,17 @@ export default class CreateUserUseCase {
     private usersRepository: IUsersRepository
   ){}
 
-  async execute({full_name, email, phone, cpf_number,  average_salary }: ICreateUserDTO) {
+  async execute({full_name, email, phone, cpf_number,  average_salary }: ICreateUserDTO): Promise<IResponse> {
     const userExists = await this.usersRepository.findByCpf(cpf_number);
 
     if(userExists && userExists.status.toLowerCase() === 'denied') {     
       return {
+        user: userExists,
         'error': `You are not elegible to create an account!${cpf_number}`
-      }       
+      };      
     } else if (userExists) {      
       return {
+        user: userExists,
         'error': 'CPF already used!'
       }      
     }
@@ -44,6 +51,6 @@ export default class CreateUserUseCase {
       status
     });
     
-    return user;
+    return { user };
   }
 }
