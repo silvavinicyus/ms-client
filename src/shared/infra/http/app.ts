@@ -18,52 +18,30 @@ createConnection().then(() => {
 
 const app = express();
 
-app.use(router);
-
-app.use(
-  (err: Error, request: Request, response: Response, next: NextFunction) => {
-    if (err instanceof AppError) {
-      return response.status(err.statusCode).json({ message: err.message });
-    }
-
-    return response.status(500).json({
-      status: 'error',
-      message: `Internal server error - ${err.message}`,
-    });
-  }
-);
-
-const topicNormalUser = 'user_lubycash';
+const topicNormalUser = 'createuser';
 const consumerNormalUser = kafka.consumer({ groupId: 'create-user' });
 const creteUserController = new CreateUserController();
 
 async function createUser() {
   await consumerNormalUser.connect();
-  await consumerNormalUser.subscribe({ topic: topicNormalUser, fromBeginning: true}).then(() => {
-    console.log("Subscribed");
-  });
-
-  let user: User;
+  await consumerNormalUser.subscribe({ topic: topicNormalUser, fromBeginning: false});    
 
   await consumerNormalUser.run({
-    eachMessage: async ({topic, partition, message}) => {
-      const data = message.value!.toString();
-      const dataJson = JSON.parse(data);     
+    eachMessage: async ({topic, partition, message}) => {      
+      const data = message.value.toString();
+      const dataJson = JSON.parse(data);      
+      console.log(dataJson)
 
-      console.log(dataJson);
-
-      user = await creteUserController.handle(dataJson);
-
-      console.log(user)
+      const user = await creteUserController.handle(dataJson); 
       
-    }
-  });
-
-  return user;
+      console.log(user);
+    }    
+  });  
 }
 
 createUser();
 
+app.listen(3000, () => {
+  console.log('Server started at port 3333.');  
+});
 
-
-export { app };

@@ -25,8 +25,7 @@ services:
       
   database_msclient:
     image: postgres
-    container_name: database_msclient
-    restart: always   
+    container_name: database_msclient       
     ports:
       - 5431:5432
     environment: 

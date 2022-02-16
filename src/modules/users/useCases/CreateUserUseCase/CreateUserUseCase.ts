@@ -11,11 +11,27 @@ export default class CreateUserUseCase {
     private usersRepository: IUsersRepository
   ){}
 
-  async execute({full_name, email, phone, cpf_number, current_balance, average_salary, status}: ICreateUserDTO): Promise<User>{
+  async execute({full_name, email, phone, cpf_number,  average_salary }: ICreateUserDTO) {
     const userExists = await this.usersRepository.findByCpf(cpf_number);
 
-    if(userExists) {
-      throw new AppError('CPF already used!');
+    if(userExists && userExists.status.toLowerCase() === 'denied') {     
+      return {
+        'error': `You are not elegible to create an account!${cpf_number}`
+      }       
+    } else if (userExists) {      
+      return {
+        'error': 'CPF already used!'
+      }      
+    }
+
+    let status: string;
+    let current_balance: number;
+    if(average_salary < 500) {
+      status = 'denied';
+      current_balance = 0;
+    } else {
+      status = 'approved';
+      current_balance = 200;
     }
 
     const user = await this.usersRepository.create({
@@ -26,8 +42,8 @@ export default class CreateUserUseCase {
       current_balance, 
       average_salary, 
       status
-    });0
-
+    });
+    
     return user;
   }
 }
