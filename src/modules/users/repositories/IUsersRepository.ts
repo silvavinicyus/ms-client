@@ -3,7 +3,7 @@ import User from "../entities/User";
 
 interface IRequest {
   email: string;
-  value: number;
+  newBalance: number;
 }
 
 interface IUsersRepository {
@@ -19,7 +19,7 @@ interface IUsersRepository {
 
   findByEmail(email: string): Promise<User>;
 
-  changeBalance({email, value}: IRequest): Promise<User>;
+  changeBalance({email, newBalance}: IRequest): Promise<User>;  
 }
 
 export { IUsersRepository };

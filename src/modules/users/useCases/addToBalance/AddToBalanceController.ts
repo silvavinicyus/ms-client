@@ -4,7 +4,7 @@ import AddToBalanceUseCase from "./AddToBalanceUseCase";
 
 export default class AddToBalanceController  {
   async handle(request: Request, response: Response): Promise<Response> {
-    const { value, email } = request.body;        
+    const { value, email } = request.body;              
 
     const addToBalanceUseCase = container.resolve(AddToBalanceUseCase);
 

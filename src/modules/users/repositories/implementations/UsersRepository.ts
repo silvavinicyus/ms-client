@@ -5,7 +5,7 @@ import { IUsersRepository } from "../IUsersRepository";
 
 interface IRequest {
   email: string;
-  value: number;
+  newBalance: number;
 }
 
 
@@ -16,10 +16,10 @@ export default class UsersRepository implements IUsersRepository {
     this.repository = getRepository(User);
   }
 
-  async changeBalance({ email, value }: IRequest): Promise<User> {
+  async changeBalance({ email, newBalance }: IRequest): Promise<User> {
     const user = await this.repository.findOne({email});
 
-    user.current_balance += value;
+    user.current_balance = newBalance;
 
     await this.repository.save(user);
 
