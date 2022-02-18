@@ -16,6 +16,18 @@ export default class UsersRepository implements IUsersRepository {
     this.repository = getRepository(User);
   }
 
+  async index(): Promise<User[]> {
+    const users = await this.repository.find();
+    
+    return users;
+  }
+
+  async findByStatus(status: string): Promise<User[]> {
+    const users = await this.repository.find({status});
+
+    return users;
+  }
+
   async changeBalance({ email, newBalance }: IRequest): Promise<User> {
     const user = await this.repository.findOne({email});
 

@@ -19,7 +19,11 @@ interface IUsersRepository {
 
   findByEmail(email: string): Promise<User>;
 
-  changeBalance({email, newBalance}: IRequest): Promise<User>;  
+  changeBalance({email, newBalance}: IRequest): Promise<User>;
+  
+  findByStatus(status: string): Promise<User[]>;
+
+  index(): Promise<User[]>;
 }
 
 export { IUsersRepository };
