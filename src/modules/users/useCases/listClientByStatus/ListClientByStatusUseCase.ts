@@ -12,9 +12,12 @@ export default class ListClientByStatusUseCase {
   async execute(status?: string): Promise<User[]> {
     let users: User[];
 
-    if(status) {
+    console.log(status);
+
+    if(status !== 'undefined') {      
       users = await this.usersRepository.findByStatus(status);
     } else {
+      console.log("entrou aqui")
       users = await this.usersRepository.index();
     }
 

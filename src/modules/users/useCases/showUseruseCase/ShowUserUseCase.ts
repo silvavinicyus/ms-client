@@ -4,6 +4,11 @@ import { AppError } from "../../../../shared/errors/AppError";
 import User from "../../entities/User";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
 
+interface IRequest {
+  email?: string;
+  cpf?: string;
+}
+
 @injectable()
 export default class ShowUserUseCase {
   constructor(
@@ -11,8 +16,15 @@ export default class ShowUserUseCase {
     private usersRepository: IUsersRepository
   ){}  
 
-  async execute(email: string): Promise<User> {
-    const user = await this.usersRepository.findByEmail(email);        
+  async execute({email,  cpf}: IRequest): Promise<User> {
+    let user: User;
+    
+
+    if(email !== 'undefined') {
+      user = await this.usersRepository.findByEmail(email);      
+    } if (cpf !== 'undefined') {      
+      user = await this.usersRepository.findByCpf(cpf);              
+    }
 
     if(!user) {            
       throw new AppError("There is no user with the given email");

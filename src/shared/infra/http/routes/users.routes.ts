@@ -12,7 +12,7 @@ const addToBalanceController = new AddToBalanceController();
 const removeFromBalanceController = new RemoveFromBalanceController();
 const listClientByStatusController = new ListClientByStatusController();
 
-userRoutes.get('/email/:email', showUserController.handle);
+userRoutes.get('/field', showUserController.handle);
 
 userRoutes.post('/add/balance', addToBalanceController.handle);
 

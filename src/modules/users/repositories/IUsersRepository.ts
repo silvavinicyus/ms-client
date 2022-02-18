@@ -19,6 +19,8 @@ interface IUsersRepository {
 
   findByEmail(email: string): Promise<User>;
 
+  findByCpf(cpf_number: string): Promise<User>;
+
   changeBalance({email, newBalance}: IRequest): Promise<User>;
   
   findByStatus(status: string): Promise<User[]>;
