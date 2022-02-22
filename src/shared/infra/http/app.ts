@@ -6,6 +6,7 @@ import 'reflect-metadata';
 import CreateUserController from '../../../modules/users/useCases/CreateUserUseCase/CreateUserController';
 import createConnection from '../../../shared/infra/typeorm';
 import '../../container';
+import Mailer from '../../utils/Mail';
 import router from './routes';
 
 createConnection().then(() => {
@@ -32,6 +33,8 @@ const creteUserController = new CreateUserController();
 
 const producerUserCreated = kafka.producer();
 
+const mailer = new Mailer();
+
 async function createUser() {
   await consumerNormalUser.connect();
   await consumerNormalUser.subscribe({ topic: topicNormalUser, fromBeginning: false});    
@@ -39,15 +42,20 @@ async function createUser() {
   await consumerNormalUser.run({
     eachMessage: async ({topic, partition, message}) => {  
       const data = message.value.toString();
-      const dataJson = JSON.parse(data);            
-      console.log({topic, partition, dataJson});      
+      const dataJson = JSON.parse(data);                      
       const result = await creteUserController.handle(dataJson);
       
       await producerUserCreated.connect();
       await producerUserCreated.send({
         topic: 'usercreated',
         messages: [{value: JSON.stringify(result)}]
-      });                               
+      });
+
+      await mailer.sendMail({
+        status: result.user.status,
+        email: result.user.email,
+        name: result.user.full_name,
+      });
     }    
   });  
   
