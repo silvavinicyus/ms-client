@@ -1,5 +1,4 @@
 import { inject, injectable } from "tsyringe";
-import { AppError } from "../../../../shared/errors/AppError";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
 
 interface IRequest {
@@ -17,8 +16,11 @@ export default class AddToBalanceUseCase {
   async execute( { value, email }: IRequest ) {    
     const userExists = await this.usersRepository.findByEmail(email);       
 
-    if(!userExists) {      
-      throw new AppError(`There is no user with the given email${email}`);
+    if(!userExists) {            
+      return {        
+        status: 404,
+        error: `There is no user with the given email`,
+      };
     }    
 
     const balance = userExists.current_balance;

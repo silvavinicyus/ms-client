@@ -10,6 +10,10 @@ export default class ShowUserController {
     
     const user = await showUserUsecase.execute({email: String(email), cpf: String(cpf)});       
 
+    if(user.status === 404) {
+      return response.status(404).json({error: user['error']});
+    }
+
     return response.json(user);
   }
 }

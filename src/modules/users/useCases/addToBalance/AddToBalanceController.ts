@@ -10,6 +10,10 @@ export default class AddToBalanceController  {
 
     const result = await addToBalanceUseCase.execute({value, email});
 
+    if(result.status === 404) {
+      return response.status(404).json({error: result['error']});
+    }
+
     return response.status(200).json(result);
   }
 }

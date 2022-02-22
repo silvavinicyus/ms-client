@@ -1,13 +1,7 @@
 import { inject, injectable } from "tsyringe";
-import { AppError } from "../../../../shared/errors/AppError";
 import { ICreateUserDTO } from "../../dtos/CreateUserDTO";
-import User from "../../entities/User";
+import IResponse from "../../interfaces/IResponse";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
-
-interface IResponse {
-  user: User,
-  error?: string;    
-}
 
 @injectable()
 export default class CreateUserUseCase {

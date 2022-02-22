@@ -1,6 +1,5 @@
 import { response } from "express";
 import { inject, injectable } from "tsyringe";
-import { AppError } from "../../../../shared/errors/AppError";
 import User from "../../entities/User";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
 
@@ -16,7 +15,7 @@ export default class ShowUserUseCase {
     private usersRepository: IUsersRepository
   ){}  
 
-  async execute({email,  cpf}: IRequest): Promise<User> {
+  async execute({email,  cpf}: IRequest) {
     let user: User;
     
 
@@ -24,11 +23,14 @@ export default class ShowUserUseCase {
       user = await this.usersRepository.findByEmail(email);      
     } if (cpf !== 'undefined') {      
       user = await this.usersRepository.findByCpf(cpf);              
-    }
+    }  
 
     if(!user) {            
-      throw new AppError("There is no user with the given email");
-    }    
+      return {        
+        status: 404,
+        error: `There is no user with the given information`,
+      };
+    } 
 
     return user;
   }

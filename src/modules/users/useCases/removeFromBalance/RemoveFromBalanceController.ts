@@ -10,6 +10,10 @@ export default class RemoveFromBalanceController {
 
     const userResult = await removeFromBalanceUseCase.execute({email, value});
 
+    if(userResult.status === 404) {
+      return response.status(404).json({error: userResult['error']});
+    }
+
     return response.json(userResult);
   }
 }
