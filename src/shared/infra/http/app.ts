@@ -57,11 +57,9 @@ async function createUser() {
         name: result.user.full_name,
       });
     }    
-  });  
-  
-  // producerUserCreated.disconnect();
+  });    
 }
 
 createUser().then(() => {
-  console.log("CONSUMER ESTÁ FUNCIONANDO!");
+  console.log("Consumer started!");
 });
