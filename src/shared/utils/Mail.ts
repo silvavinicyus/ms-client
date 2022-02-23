@@ -2,8 +2,10 @@ import Mail from 'nodemailer';
 
 interface IRequestData {  
   name: string;
-  status: string;
+  status?: string;
   email: string;  
+  erroCpfExist?: boolean;
+  erroCpfDenied?: boolean;
 }
 
 export default class Mailer {
@@ -29,13 +31,21 @@ export default class Mailer {
     });
   }
 
-  async sendMail({name, email, status}: IRequestData) {    
+  async sendMail({name, email, status, erroCpfExist, erroCpfDenied}: IRequestData) {    
     let message: string; 
 
     if(status === "approved") {
       message =`<h1> Hello ${name} </h1> <p> We are happy to tell you that your request to be part of our institution was approved and you <b> earned R$ 200 </b> for been approved, enjoy it! </p>`;
-    } else {
+    } else if(status === "denied") {
       message = `<h1> Hello ${name} </h1> <p> We are sad to tell you that your request to be part of our institution was denied. </p>`;
+    }
+
+    if(erroCpfExist) {
+      message = `<h1> Hello ${name} </h1> <p> Thi CPF number is already used, please try again with a valid and not used CPF number! </p>`;
+    } 
+
+    if(erroCpfDenied) {
+      message = `<h1> Hello ${name} </h1> <p> You already have requested to be part of LubyCash and get denied! </p>`;
     }
     
     const info = await this.transporter.sendMail({

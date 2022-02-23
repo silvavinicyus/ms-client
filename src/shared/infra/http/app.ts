@@ -42,8 +42,9 @@ async function createUser() {
   await consumerNormalUser.run({
     eachMessage: async ({topic, partition, message}) => {  
       const data = message.value.toString();
-      const dataJson = JSON.parse(data);                      
-      const result = await creteUserController.handle(dataJson);
+      const dataJson = JSON.parse(data);                
+      
+      const result = await creteUserController.handle(dataJson);      
       
       await producerUserCreated.connect();
       await producerUserCreated.send({
@@ -51,11 +52,28 @@ async function createUser() {
         messages: [{value: JSON.stringify(result)}]
       });
 
-      await mailer.sendMail({
-        status: result.user.status,
-        email: result.user.email,
-        name: result.user.full_name,
-      });
+      if(!result.error) {
+        await mailer.sendMail({
+          status: result.user.status,
+          email: result.user.email,
+          name: result.user.full_name,
+        });
+      } else {        
+        if(result.error === 'CPF already used!'){          
+          await mailer.sendMail({            
+            email: dataJson.email,
+            name: dataJson.full_name,
+            erroCpfExist: true
+          })
+        } else if (result.error === 'You are not elegible to create an account!') {          
+          await mailer.sendMail({            
+            email: dataJson.email,
+            name: dataJson.full_name,
+            erroCpfDenied: true
+          })
+        }
+        
+      }
     }    
   });    
 }

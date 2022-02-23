@@ -16,7 +16,7 @@ export default class CreateUserUseCase {
     if(userExists && userExists.status.toLowerCase() === 'denied') {     
       return {
         user: userExists,
-        'error': `You are not elegible to create an account!${cpf_number}`
+        'error': `You are not elegible to create an account!`
       };      
     } else if (userExists) {      
       return {
