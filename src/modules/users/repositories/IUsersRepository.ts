@@ -6,6 +6,11 @@ interface IRequest {
   newBalance: number;
 }
 
+interface IRequestByDate {
+  starting_date: Date;
+  ending_date: Date;
+}
+
 interface IUsersRepository {
   create({full_name,
     email,
@@ -26,6 +31,8 @@ interface IUsersRepository {
   findByStatus(status: string): Promise<User[]>;
 
   index(): Promise<User[]>;
+
+  findByDate({starting_date, ending_date}: IRequestByDate): Promise<User[]>;
 }
 
 export { IUsersRepository };

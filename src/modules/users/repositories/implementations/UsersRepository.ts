@@ -1,4 +1,4 @@
-import { getRepository, Repository } from "typeorm";
+import { Between, getRepository, Repository } from "typeorm";
 import { ICreateUserDTO } from "../../dtos/CreateUserDTO";
 import User from "../../entities/User";
 import { IUsersRepository } from "../IUsersRepository";
@@ -8,12 +8,26 @@ interface IRequest {
   newBalance: number;
 }
 
+interface IRequestByDate {
+  starting_date: Date;
+  ending_date: Date;
+}
 
 export default class UsersRepository implements IUsersRepository {
   private repository: Repository<User>;
 
   constructor() {
     this.repository = getRepository(User);
+  }
+
+  async findByDate({ starting_date, ending_date }: IRequestByDate): Promise<User[]> {
+    const users = await this.repository.find({
+      where: {
+        created_at : Between(starting_date, ending_date)
+      }
+    });
+
+    return users;
   }
 
   async index(): Promise<User[]> {
